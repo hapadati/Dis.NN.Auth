@@ -5,8 +5,7 @@ import dotenv from "dotenv";
 import { db } from "../firebase.js";
 import { doc, setDoc } from "firebase/firestore";
 import { isVpnIp } from "./verify-vpn.js";
-import blockedGuilds from "./blocked.json" assert { type: "json" };
-
+import blockedGuilds from "./blocked.json" with { type: "json" };
 dotenv.config();
 
 const router = express.Router();
