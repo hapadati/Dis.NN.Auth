@@ -124,32 +124,18 @@ function parseDiceExpression(dice) {
     return { baseDice, modifier };
 }
 async function showRollingEmbed(message, diceResultCallback, originalDiceText, minTotal, maxTotal) {
-    const rollingEmbed = new EmbedBuilder()
-        .setTitle(`${message.author.username} のサイコロ振り中...`)
-        .setColor(0xffff00)
-        .setDescription(`振っています... ${originalDiceText}`);
-
-    const rollingMessage = await message.reply({ embeds: [rollingEmbed] });
-
-    const rollingStages = 3; // 3回アニメーション表示
-
-    for (let i = 0; i < rollingStages; i++) {
-        const randomRoll = Math.floor(Math.random() * (maxTotal - minTotal + 1)) + minTotal;
-        rollingEmbed.setDescription(`振っています... ${originalDiceText} → ${randomRoll}`);
-        await rollingMessage.edit({ embeds: [rollingEmbed] });
-        await new Promise(resolve => setTimeout(resolve, 100)); // 100ms待機
-    }
-
     const { resultMessage, embedColor } = await diceResultCallback();
+
     const finalEmbed = new EmbedBuilder()
-        .setTitle(`${message.author.username} のサイコロ結果`)
+        .setTitle(`${message.author.username} のサイコロ結果 (${originalDiceText})`)
         .setDescription(resultMessage)
         .setColor(embedColor)
         .setFooter({ text: 'サイコロ結果' })
         .setTimestamp();
 
-    await rollingMessage.edit({ embeds: [finalEmbed] });
+    await message.reply({ embeds: [finalEmbed] });
 }
+
 
 // ダイスコマンドのメイン処理
 export async function handleMessageRoll(message) {
