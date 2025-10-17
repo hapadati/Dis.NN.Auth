@@ -43,7 +43,6 @@ import { geoquizCommand } from './commands/utils/geoquiz.js';
 import { execute as itemExecute, handleComponent } from "./commands/points/item-list.js"; // コンポーネント処理用に import
 // main.mjs の Express 部分の直前に追加
 import authRouter from './auth/auth-server.js';
-app.use("/auth", authRouter);
 
 // 基本コマンド（**コマンドモジュールのみ**を並べる）
 const rawCommands = [
@@ -242,17 +241,6 @@ client.on('messageCreate', async (message) => {
     await message.reply('🏓 Pong!');
   }
 
-  // ( ´◔‸◔`) 顔文字反応
-  const faceRegexTuna = /\(\s?´◔‸◔`\s?\)/;
-  if (faceRegexTuna.test(message.content)) {
-    const replies = [
-      'つなしないよ、HDBotだけ見て！',
-      '( ´◔‸◔`)👐まのﾎﾞﾝ',
-      '( ´◔‸◔`)👐🌻',
-    ];
-    const randomReply = replies[Math.floor(Math.random() * replies.length)];
-    await message.reply(randomReply);
-  }
 
   // ダイスコマンド
   const dicePattern = /(dd\d+|(\d+)d(\d+))/i;
@@ -300,6 +288,7 @@ client.login(process.env.DISCORD_TOKEN);
 // 📂 Express Web サーバー
 // ==========================
 const app = express();
+app.use("/auth", authRouter);
 const port = process.env.PORT || 3000;
 
 app.get('/', (req, res) => {
