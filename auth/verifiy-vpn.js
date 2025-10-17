@@ -23,7 +23,7 @@ export async function isVpnIp(ip) {
     const vpnDetected = data?.security?.vpn || data?.security?.proxy || data?.security?.tor;
     return vpnDetected === true;
   } catch (err) {
-    console.error("❌ VPN check error:", err);
+    console.error("❌ VPN Check Error:", err);
     return false;
   }
 }
