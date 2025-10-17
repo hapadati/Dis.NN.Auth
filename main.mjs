@@ -41,6 +41,9 @@ import { softbanCommand } from './commands/manage/softban.js';
 import { timeoutCommand } from './commands/manage/timeout.js';
 import { geoquizCommand } from './commands/utils/geoquiz.js';
 import { execute as itemExecute, handleComponent } from "./commands/points/item-list.js"; // コンポーネント処理用に import
+// main.mjs の Express 部分の直前に追加
+import authRouter from './auth/auth-server.js';
+app.use("/auth", authRouter);
 
 // 基本コマンド（**コマンドモジュールのみ**を並べる）
 const rawCommands = [
