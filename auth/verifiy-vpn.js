@@ -1,15 +1,29 @@
+// auth/verify-vpn.js
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
 
 export async function isVpnIp(ip) {
-  if (!ip || ip.startsWith("::1")) return false; // ローカルアクセスは許可
+  if (!ip || ip.startsWith("::1")) return false; // ローカルは除外
 
   const apiKey = process.env.VPNAPI_KEY;
-  const res = await fetch(`https://vpnapi.io/api/${ip}?key=${apiKey}`);
-  const data = await res.json();
+  if (!apiKey) {
+    console.warn("⚠️ VPNAPI_KEY is not set. Skipping VPN check.");
+    return false;
+  }
 
-  // VPNやProxyなどの情報をチェック
-  const vpnDetected = data?.security?.vpn || data?.security?.proxy || data?.security?.tor;
-  return vpnDetected === true;
+  try {
+    const res = await fetch(`https://vpnapi.io/api/${ip}?key=${apiKey}`);
+    if (!res.ok) {
+      console.warn("⚠️ VPN API request failed:", res.status);
+      return false;
+    }
+
+    const data = await res.json();
+    const vpnDetected = data?.security?.vpn || data?.security?.proxy || data?.security?.tor;
+    return vpnDetected === true;
+  } catch (err) {
+    console.error("❌ VPN check error:", err);
+    return false;
+  }
 }
