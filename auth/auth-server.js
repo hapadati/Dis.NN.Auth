@@ -73,4 +73,4 @@ router.get("/callback", async (req, res) => {
   
     res.send(`✅ 認証成功: ${user.username}`);
   });
-  
+  export default router;
