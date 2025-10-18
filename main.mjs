@@ -70,25 +70,6 @@ if (fs.existsSync(rankPath)) {
 } else {
   console.log("[rank] rankPath not found:", rankPath);
 }
-// ==========================
-// 📂 スラッシュコマンド登録
-// ==========================
-const allCommandModules = [
-  pingCommand,
-  omikujiCommand,
-  mentionCommand,
-  recruitmentCommand,
-  alldeleteCommand,
-  banCommand,
-  kickCommand,
-  roleCommand,
-  softbanCommand,
-  timeoutCommand,
-  geoquizCommand,
-  ...pointsCommands,
-  ...rawCommands,
-  ...rankCommands, // ← XP/レベル関連コマンド群を追加
-];
 // 📂 points コマンドの自動読み込み（安全に）
 const pointsCommands = [];
 const pointsPath = path.join(__dirname, 'commands', 'points');
@@ -115,6 +96,26 @@ if (fs.existsSync(pointsPath)) {
 } else {
   console.log("[points] pointsPath not found:", pointsPath);
 }
+
+// ==========================
+// 📂 スラッシュコマンド登録
+// ==========================
+const allCommandModules = [
+  pingCommand,
+  omikujiCommand,
+  mentionCommand,
+  recruitmentCommand,
+  alldeleteCommand,
+  banCommand,
+  kickCommand,
+  roleCommand,
+  softbanCommand,
+  timeoutCommand,
+  geoquizCommand,
+  ...pointsCommands,
+  ...rawCommands,
+  ...rankCommands, // ← XP/レベル関連コマンド群を追加
+];
 
 
 // フィルタして data.toJSON が使えるモジュールだけ残す
