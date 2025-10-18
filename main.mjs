@@ -113,7 +113,6 @@ const allCommandModules = [
   timeoutCommand,
   geoquizCommand,
   ...pointsCommands,
-  ...rawCommands,
   ...rankCommands, // ← XP/レベル関連コマンド群を追加
 ];
 
