@@ -1,52 +1,37 @@
-import { SlashCommandBuilder, AttachmentBuilder } from "discord.js";
-import { db } from "../../firebase.js";
-import { doc, getDoc } from "firebase/firestore";
-import { generateXPCard } from "../utils/xp-card.js";
-import fs from "fs";
-import path from "path";
+import { SlashCommandBuilder } from "discord.js";
+import { db } from "../../firestore.js";
 
-export default {
-  data: new SlashCommandBuilder()
-    .setName("rank")
-    .setDescription("自分または指定したユーザーのXP・レベルを表示します。")
-    .addUserOption(option =>
-      option.setName("ユーザー").setDescription("確認したいユーザーを指定します。")
-    ),
+export const data = new SlashCommandBuilder()
+  .setName("top")
+  .setDescription("サーバーのXPランキングを表示");
 
-  async execute(interaction) {
-    await interaction.deferReply();
+export async function execute(interaction) {
+  const guildId = interaction.guildId;
 
-    const user = interaction.options.getUser("ユーザー") || interaction.user;
-    const guildId = interaction.guild.id;
+  try {
+    const usersRef = db.collection("servers").doc(guildId).collection("users");
+    const snapshot = await usersRef.get();
 
-    const userRef = doc(db, "xp", guildId, "users", user.id);
-    const userSnap = await getDoc(userRef);
-
-    if (!userSnap.exists()) {
-      return interaction.editReply("❌ まだXPデータがありません。メッセージを送ってXPを貯めましょう！");
+    if (snapshot.empty) {
+      return interaction.reply("📭 このサーバーにはまだデータがありません。");
     }
 
-    const userData = userSnap.data();
-    const themePath = userData.themePath || "./assets/default-theme.png";
-
-    // XPカード画像生成
-    const buffer = await generateXPCard(user, userData, themePath);
-
-    // ファイル形式をレベルで分岐
-    const fileExtension = userData.level >= 20 ? "gif" : "png";
-    const fileName = `rank-${user.id}.${fileExtension}`;
-    const filePath = path.join("./temp", fileName);
-
-    if (!fs.existsSync("./temp")) fs.mkdirSync("./temp");
-    fs.writeFileSync(filePath, buffer);
-
-    const attachment = new AttachmentBuilder(filePath);
-
-    await interaction.editReply({
-      content: `🎖️ **${user.username}** のXPカード`,
-      files: [attachment],
+    const users = [];
+    snapshot.forEach(doc => {
+      users.push({ id: doc.id, ...doc.data() });
     });
 
-    fs.unlinkSync(filePath);
-  },
-};
+    users.sort((a, b) => b.xp - a.xp);
+    const top = users.slice(0, 10);
+
+    let text = `🏆 **${interaction.guild.name} XPランキング TOP10** 🏆\n\n`;
+    for (let i = 0; i < top.length; i++) {
+      text += `**${i + 1}.** <@${top[i].id}> — Lv.${top[i].level ?? 1} (${top[i].xp ?? 0} XP)\n`;
+    }
+
+    await interaction.reply({ content: text });
+  } catch (err) {
+    console.error("❌ Firestore 読み込みエラー:", err);
+    await interaction.reply({ content: "⚠️ データ取得中にエラーが発生しました。", ephemeral: true });
+  }
+}
