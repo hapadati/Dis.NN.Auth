@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder } from 'discord.js';
-import { loadGuildData } from '../../utils/data-manager.js';
+import { loadGuildData } from '../utils/data-manager.js';
 
 export const data = new SlashCommandBuilder()
     .setName('top')

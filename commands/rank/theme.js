@@ -1,7 +1,7 @@
 import { SlashCommandBuilder } from 'discord.js';
 import fs from 'fs';
 import path from 'path';
-import { loadGuildData } from '../../utils/data-manager.js';
+import { loadGuildData } from '../utils/data-manager.js';
 
 export const data = new SlashCommandBuilder()
     .setName('theme')
