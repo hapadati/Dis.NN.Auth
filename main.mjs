@@ -40,12 +40,41 @@ import { roleCommand } from './commands/manage/role.js';
 import { softbanCommand } from './commands/manage/softban.js';
 import { timeoutCommand } from './commands/manage/timeout.js';
 import { geoquizCommand } from './commands/utils/geoquiz.js';
-import { execute as itemExecute, handleComponent } from "./commands/points/item-list.js"; // コンポーネント処理用に import
-// main.mjs の Express 部分の直前に追加
+import { execute as itemExecute, handleComponent } from "./commands/points/item-list.js";
 import authRouter from './auth/auth-server.js';
 
-// 基本コマンド（**コマンドモジュールのみ**を並べる）
-const rawCommands = [
+// ==========================
+// 📂 rank コマンドの自動読み込み
+// ==========================
+const rankCommands = [];
+const rankPath = path.join(__dirname, 'commands', 'rank');
+
+if (fs.existsSync(rankPath)) {
+  const rankFiles = fs.readdirSync(rankPath).filter(f => f.endsWith('.js'));
+  for (const file of rankFiles) {
+    const filePath = path.join(rankPath, file);
+    try {
+      const imported = await import(filePath);
+      const moduleCandidate = imported.default ?? imported;
+      const hasData = moduleCandidate?.data && typeof moduleCandidate.execute === "function";
+      if (hasData) {
+        rankCommands.push(moduleCandidate);
+        console.log(`✅ 読み込み成功: rank/${file}`);
+      } else {
+        console.warn(`⚠️ 読み込み失敗 (not a command module): rank/${file}`);
+      }
+    } catch (err) {
+      console.error(`❌ rank/${file} 読み込みエラー:`, err);
+    }
+  }
+} else {
+  console.log("[rank] rankPath not found:", rankPath);
+}
+// ==========================
+// 📂 スラッシュコマンド登録
+// ==========================
+const allCommandModules = [
+  pingCommand,
   omikujiCommand,
   mentionCommand,
   recruitmentCommand,
@@ -56,8 +85,10 @@ const rawCommands = [
   softbanCommand,
   timeoutCommand,
   geoquizCommand,
+  ...pointsCommands,
+  ...rawCommands,
+  ...rankCommands, // ← XP/レベル関連コマンド群を追加
 ];
-
 // 📂 points コマンドの自動読み込み（安全に）
 const pointsCommands = [];
 const pointsPath = path.join(__dirname, 'commands', 'points');
@@ -85,14 +116,6 @@ if (fs.existsSync(pointsPath)) {
   console.log("[points] pointsPath not found:", pointsPath);
 }
 
-// ==========================
-// 📂 スラッシュコマンド登録（安全化）
-// ==========================
-const allCommandModules = [
-  pingCommand,
-  ...rawCommands,
-  ...pointsCommands,
-];
 
 // フィルタして data.toJSON が使えるモジュールだけ残す
 const validCommandModules = allCommandModules.filter(mod => {
@@ -136,76 +159,57 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
     console.error('❌ コマンド登録エラー:', error);
   }
 })();
-
 // ==========================
 // 📂 Interaction 処理
 // ==========================
 client.on('interactionCreate', async (interaction) => {
   try {
-    // ログを出す（簡易）
     console.log("[interactionCreate] incoming:", interaction.id, interaction.type);
 
     // スラッシュコマンド（Chat Input）
     if (interaction.isChatInputCommand()) {
       const { commandName } = interaction;
-      console.log("[interactionCreate] chat command:", commandName, "by", interaction.user?.tag);
+      console.log(`[interactionCreate] chat command: ${commandName} by ${interaction.user?.tag}`);
 
-      // 固定コマンド処理（必要に応じて拡張）
-      switch (commandName) {
-        case 'ping':
-          await pingCommand.execute(interaction);
-          break;
-        case 'おみくじ':
-          await omikujiCommand.execute(interaction);
-          break;
-        case 'mention':
-          await mentionCommand.execute(interaction);
-          break;
-        case 'recruitment':
-          await recruitmentCommand.execute(interaction);
-          break;
-        case 'alldelete':
-          await alldeleteCommand.execute(interaction);
-          break;
-        case 'ban':
-          await banCommand.execute(interaction);
-          break;
-        case 'kick':
-          await kickCommand.execute(interaction);
-          break;
-        case 'role':
-          await roleCommand.execute(interaction);
-          break;
-        case 'softban':
-          await softbanCommand.execute(interaction);
-          break;
-        case 'timeout':
-          await timeoutCommand.execute(interaction);
-          break;
-        case 'geoquiz':
-          await geoquizCommand.execute(interaction);
-          break;
-      }
+      // ✅ rank / points 両方の動的コマンドを検索
+      const dynamicCommands = [...pointsCommands, ...rankCommands];
+      const found = dynamicCommands.find(cmd => cmd.data && cmd.data.name === commandName);
 
-      // 動的に読み込んだ points コマンド群
-      const found = pointsCommands.find(cmd => cmd.data && cmd.data.name === commandName);
       if (found) {
-        console.log("[interactionCreate] executing points command:", commandName);
+        console.log(`🎯 実行中: ${commandName}`);
         await found.execute(interaction);
+
+        // ログ送信
+        await logToSheets({
+          serverId: interaction.guildId,
+          userId: interaction.user.id,
+          channelId: interaction.channelId,
+          level: "INFO",
+          timestamp: interaction.createdAt.toISOString(),
+          cmd: interaction.commandName,
+          message: "Slash command executed",
+        });
+        return;
       }
 
-      // ログ送信
-      await logToSheets({
-        serverId: interaction.guildId,
-        userId: interaction.user.id,
-        channelId: interaction.channelId,
-        level: "INFO",
-        timestamp: interaction.createdAt.toISOString(),
-        cmd: interaction.commandName,
-        message: "Slash command executed",
-      });
+      // ✅ 固定コマンド処理（バックアップ）
+      switch (commandName) {
+        case 'ping': return await pingCommand.execute(interaction);
+        case 'おみくじ': return await omikujiCommand.execute(interaction);
+        case 'mention': return await mentionCommand.execute(interaction);
+        case 'recruitment': return await recruitmentCommand.execute(interaction);
+        case 'alldelete': return await alldeleteCommand.execute(interaction);
+        case 'ban': return await banCommand.execute(interaction);
+        case 'kick': return await kickCommand.execute(interaction);
+        case 'role': return await roleCommand.execute(interaction);
+        case 'softban': return await softbanCommand.execute(interaction);
+        case 'timeout': return await timeoutCommand.execute(interaction);
+        case 'geoquiz': return await geoquizCommand.execute(interaction);
+      }
 
-      return; // チャットコマンド処理はここで終える
+      // もし該当がなければ
+      console.warn(`⚠️ 未定義のスラッシュコマンド: ${commandName}`);
+      return;
     }
 
     // コンポーネント（ボタン / セレクト / モーダル）
@@ -214,10 +218,10 @@ client.on('interactionCreate', async (interaction) => {
         interaction.isButton() ? "button" :
         interaction.isStringSelectMenu() ? "select" :
         interaction.isModalSubmit() ? "modal" : "unknown");
-      // handleComponent は commands/points/item-list.js から import している関数
       await handleComponent(interaction);
       return;
     }
+
   } catch (err) {
     console.error("❌ interactionCreate error:", err);
     try {
