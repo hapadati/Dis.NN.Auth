@@ -42,7 +42,18 @@ import { timeoutCommand } from './commands/manage/timeout.js';
 import { geoquizCommand } from './commands/utils/geoquiz.js';
 import { execute as itemExecute, handleComponent } from "./commands/points/item-list.js";
 import authRouter from './auth/auth-server.js';
-
+import { authbuttonCommand } from './commands/auth/authbutton.js';
+import { rolebuttonCommand } from './commands/manage/rolebutton.js';
+import { removebuttonCommand } from './commands/manage/removebutton.js';
+import { createchannelCommand } from './commands/manage/createchannel.js';
+import { deletechannelCommand } from './commands/manage/deletechannel.js';
+import { renamechannelCommand } from './commands/manage/renamechannel.js';
+import { lockchannelCommand } from './commands/manage/lockchannel.js';
+import { unlockchannelCommand } from './commands/manage/unlockchannel.js';
+import { pinchannelCommand } from './commands/manage/pinchannel.js';
+import { unpinchannelCommand } from './commands/manage/unpinchannel.js';
+import { categorychannelCommand } from './commands/manage/categorychannel.js';
+import { uncategorizechannelCommand } from './commands/manage/uncategorizechannel.js';
 // ==========================
 // 📂 rank コマンドの自動読み込み
 // ==========================
@@ -112,6 +123,14 @@ const allCommandModules = [
   softbanCommand,
   timeoutCommand,
   geoquizCommand,
+  authbuttonCommand,
+  rolebuttonCommand,
+  removebuttonCommand,
+  createchannelCommand,
+  deletechannelCommand,
+  renamechannelCommand,
+  lockchannelCommand,
+  unlockchannelCommand,
   ...pointsCommands,
   ...rankCommands, // ← XP/レベル関連コマンド群を追加
 ];
@@ -205,6 +224,18 @@ client.on('interactionCreate', async (interaction) => {
         case 'softban': return await softbanCommand.execute(interaction);
         case 'timeout': return await timeoutCommand.execute(interaction);
         case 'geoquiz': return await geoquizCommand.execute(interaction);
+        case 'authbutton': return await authbuttonCommand.execute(interaction);
+        case 'rolebutton': return await rolebuttonCommand.execute(interaction);
+        case 'removebutton': return await removebuttonCommand.execute(interaction);
+        case 'createchannel': return await createchannelCommand.execute(interaction);
+        case 'deletechannel': return await deletechannelCommand.execute(interaction);
+        case 'renamechannel': return await renamechannelCommand.execute(interaction);
+        case 'lockchannel': return await lockchannelCommand.execute(interaction);
+        case 'unlockchannel': return await unlockchannelCommand.execute(interaction);
+        case 'pinchannel': return await pinchannelCommand.execute(interaction);
+        case 'unpinchannel': return await unpinchannelCommand.execute(interaction);
+        case 'categorychannel': return await categorychannelCommand.execute(interaction);
+        case 'uncategorizechannel': return await uncategorizechannelCommand.execute(interaction);
       }
 
       // もし該当がなければ
