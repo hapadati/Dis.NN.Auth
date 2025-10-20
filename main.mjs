@@ -204,6 +204,13 @@ client.on('interactionCreate', async (interaction) => {
         console.log(`🎯 実行中: ${commandName}`);
         await found.execute(interaction);
 
+        if (interaction.isButton()) {
+          if (interaction.customId.startsWith("rolebtn_")) {
+            await handleRoleButton(interaction);
+            return;
+          }
+          await handleComponent(interaction);
+        }
         // ログ送信
         await logToSheets({
           serverId: interaction.guildId,
