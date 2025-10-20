@@ -54,6 +54,8 @@ import { pinchannelCommand } from './commands/manage/pinchannel.js';
 import { unpinchannelCommand } from './commands/manage/unpinchannel.js';
 import { categorychannelCommand } from './commands/manage/categorychannel.js';
 import { uncategorizechannelCommand } from './commands/manage/uncategorizechannel.js';
+import { handleXpMessage } from './events/message-xp.js';
+
 // ==========================
 // 📂 rank コマンドの自動読み込み
 // ==========================
@@ -184,7 +186,11 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 client.on('interactionCreate', async (interaction) => {
   try {
     console.log("[interactionCreate] incoming:", interaction.id, interaction.type);
+    if (message.author.bot) return;
 
+    // 🔹 XP付与処理
+    await handleXpMessage(message);
+  
     // スラッシュコマンド（Chat Input）
     if (interaction.isChatInputCommand()) {
       const { commandName } = interaction;
