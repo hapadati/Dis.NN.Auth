@@ -1,4 +1,4 @@
-import { db } from "../firestore.js";
+import { db } from "../../firestore.js";
 import { getNextLevelXP } from "./level-curve.js";
 import { applyLevelRoles } from "./levelSystem.js";
 import { checkUnlocks } from "./unlockSystem.js";
