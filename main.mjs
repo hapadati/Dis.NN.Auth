@@ -61,6 +61,8 @@ import { unpinchannelCommand } from './commands/manage/unpinchannel.js';
 import { categorychannelCommand } from './commands/manage/categorychannel.js';
 import { uncategorizechannelCommand } from './commands/manage/uncategorizechannel.js';
 import { handleXpMessage } from './events/message-xp.js';
+import { xpignoreCommand } from './commands/manage/xp-ignore.js';
+import { xpBuffCommand } from './commands/manage/xp-buff.js';
 
 // ==========================
 // 📂 rank コマンドの自動読み込み
@@ -141,6 +143,8 @@ const allCommandModules = [
   unlockchannelCommand,
   ...pointsCommands,
   ...rankCommands, // ← XP/レベル関連コマンド群を追加
+  xpignoreCommand,
+  xpBuffCommand,
 ];
 
 
@@ -262,6 +266,8 @@ if (
         case 'unpinchannel': return await unpinchannelCommand.execute(interaction);
         case 'categorychannel': return await categorychannelCommand.execute(interaction);
         case 'uncategorizechannel': return await uncategorizechannelCommand.execute(interaction);
+        case 'xpignore': return await xpignoreCommand.execute(interaction);
+        case 'xp-buff': return await xpBuffCommand.execute(interaction);
       }
 
       console.warn("⚠️ 未定義のスラッシュコマンド:", commandName);
