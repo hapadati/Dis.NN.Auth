@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
-import { setLevelRoleConfig } from "../../utils/levelSystem.js";
+import { setLevelRoleConfig } from "../utils/levelSystem.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setlevelrole")
