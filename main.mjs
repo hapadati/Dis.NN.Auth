@@ -320,6 +320,7 @@ client.once('ready', () => {
     message: `${client.user.tag} が起動しました`,
   });
 });
+console.log("TOKEN CHECK:", process.env.DISCORD_TOKEN?.slice(0, 10));
 
 // Discord にログイン
 if (!process.env.DISCORD_TOKEN) {
