@@ -1,5 +1,5 @@
 // main.mjs
-import { Client, GatewayIntentBits, REST, Routes } from 'discord.js';
+import { Client, GatewayIntentBits, REST, Routes, Partials } from 'discord.js';
 import { logToSheets } from './logger.js';
 import dotenv from 'dotenv';
 import express from 'express';
@@ -14,16 +14,22 @@ const __dirname = path.dirname(__filename);
 // .env 読み込み
 dotenv.config();
 
-// Discord クライアント
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.GuildPresences,
     GatewayIntentBits.DirectMessages,
   ],
+  partials: [
+    Partials.Channel,
+    Partials.Message,
+    Partials.User,
+  ],
 });
+
 
 // ==========================
 // 📂 コマンド読み込み（静的）
