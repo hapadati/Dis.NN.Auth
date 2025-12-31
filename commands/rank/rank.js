@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, AttachmentBuilder } from "discord.js";
 import { createCanvas, loadImage } from "canvas";
-import { getNextLevelXP } from "../../utils/level-curve.js";
+import { getNextLevelXP } from "../utils/level-curve.js";
 
 export const data = new SlashCommandBuilder()
   .setName("rank")
