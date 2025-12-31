@@ -15,12 +15,19 @@ export async function execute(interaction) {
     }
   } catch (e) {
     console.error("❌ deferReply failed:", e);
+    if (!interaction.replied) {
+      await interaction.reply({
+        content: "⚠️ ランク情報の取得中にエラーが発生しました（defer失敗）",
+        ephemeral: true,
+      }).catch(() => {});
+    }
     return;
   }
 
   try {
     const { guild, user } = interaction;
 
+    // Firestore からユーザーデータ取得
     const ref = db
       .collection("guilds")
       .doc(guild.id)
@@ -39,38 +46,59 @@ export async function execute(interaction) {
     const canvas = createCanvas(800, 300);
     const ctx = canvas.getContext("2d");
 
+    // 背景
     ctx.fillStyle = "#202225";
     ctx.fillRect(0, 0, 800, 300);
 
+    // アバター
     const avatar = await loadImage(
       user.displayAvatarURL({ extension: "png", size: 128 })
     );
     ctx.drawImage(avatar, 30, 80, 128, 128);
 
+    // ユーザー情報
     ctx.fillStyle = "#fff";
     ctx.font = "28px Sans";
     ctx.fillText(user.username, 180, 130);
     ctx.fillText(`Level: ${level}`, 180, 170);
     ctx.fillText(`XP: ${xp} / ${nextXP}`, 180, 210);
 
+    // XPバーの背景
+    const barX = 180;
+    const barY = 230;
+    const barWidth = 500;
+    const barHeight = 25;
     ctx.fillStyle = "#444";
-    ctx.fillRect(180, 230, 500, 25);
-    ctx.fillStyle = "#00ff99";
-    ctx.fillRect(180, 230, 500 * progress, 25);
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+
+    // XPバーのグラデーション
+    const grad = ctx.createLinearGradient(barX, 0, barX + barWidth, 0);
+    grad.addColorStop(0, "#00ff99");
+    grad.addColorStop(1, "#00ccff");
+    ctx.fillStyle = grad;
+    ctx.fillRect(barX, barY, barWidth * progress, barHeight);
+
+    // XPバーの枠線
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 2;
+    ctx.strokeRect(barX, barY, barWidth, barHeight);
 
     const attachment = new AttachmentBuilder(canvas.toBuffer(), {
       name: "rank.png",
     });
 
-    await interaction.editReply({ files: [attachment] });
+    await interaction.editReply({ files: [attachment] }).catch(async () => {
+      if (!interaction.replied) {
+        await interaction.reply({ files: [attachment] }).catch(() => {});
+      }
+    });
 
   } catch (err) {
     console.error("❌ rank command error:", err);
-
-    // ✅ 最後の保険
     if (!interaction.replied) {
-      await interaction.editReply({
+      await interaction.reply({
         content: "⚠️ ランク情報の取得中にエラーが発生しました。",
+        ephemeral: true,
       }).catch(() => {});
     }
   }
