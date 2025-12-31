@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "discord.js";
-import { addBuff, removeBuff } from "../../rank/xp-system.js";
+import { addBuff, removeBuff } from "../rank/xp-system.js";
 
 export const data = new SlashCommandBuilder()
   .setName("xp-buff")
