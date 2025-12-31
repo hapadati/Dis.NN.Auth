@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } from "discord.js";
-import { getAllLevelConfigs } from "../../utils/levelSystem.js";
+import { getAllLevelConfigs } from "../utils/levelSystem.js";
 
 export const data = new SlashCommandBuilder()
   .setName("showlevelroles")
