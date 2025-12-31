@@ -304,6 +304,10 @@ client.on('messageCreate', async (message) => {
     message: message.content,
   });
 });
+client.on('debug', d => console.log('[DEBUG]', d));
+client.on('warn', w => console.warn('[WARN]', w));
+client.on('error', e => console.error('[ERROR]', e));
+client.on('shardError', e => console.error('[SHARD ERROR]', e));
 
 // ==========================
 // 📂 起動処理
