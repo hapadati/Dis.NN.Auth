@@ -347,3 +347,9 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`🌐 Web サーバー起動: http://localhost:${port}`);
 });
+
+client.on("error", console.error);
+client.on("shardError", console.error);
+client.on("shardDisconnect", (event) => {
+  console.warn("Shard disconnected:", event);
+});
