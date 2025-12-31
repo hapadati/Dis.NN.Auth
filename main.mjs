@@ -185,46 +185,47 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 // ==========================
 client.on('interactionCreate', async (interaction) => {
   try {
-    console.log("[interactionCreate] incoming:", interaction.id, interaction.type);
-    if (message.author.bot) return;
+    if (interaction.user?.bot) return;
 
-    // 🔹 XP付与処理
-    await handleXpMessage(message);
-  
-    // スラッシュコマンド（Chat Input）
+    // ==========================
+    // 🔘 コンポーネント（ボタン / セレクト / モーダル）
+    // ==========================
+    if (
+      interaction.isButton() ||
+      interaction.isStringSelectMenu() ||
+      interaction.isModalSubmit()
+    ) {
+      console.log(
+        "[interactionCreate] component:",
+        interaction.customId,
+        interaction.isButton() ? "button" :
+        interaction.isStringSelectMenu() ? "select" :
+        interaction.isModalSubmit() ? "modal" : "unknown"
+      );
+
+      await handleComponent(interaction);
+      return;
+    }
+
+    // ==========================
+    // 💬 スラッシュコマンド
+    // ==========================
     if (interaction.isChatInputCommand()) {
       const { commandName } = interaction;
-      console.log(`[interactionCreate] chat command: ${commandName} by ${interaction.user?.tag}`);
+      console.log(`[interactionCreate] slash command: ${commandName}`);
 
-      // ✅ rank / points 両方の動的コマンドを検索
+      // 動的コマンド（rank / points）
       const dynamicCommands = [...pointsCommands, ...rankCommands];
-      const found = dynamicCommands.find(cmd => cmd.data && cmd.data.name === commandName);
+      const found = dynamicCommands.find(
+        cmd => cmd.data?.name === commandName
+      );
 
       if (found) {
-        console.log(`🎯 実行中: ${commandName}`);
         await found.execute(interaction);
-
-        if (interaction.isButton()) {
-          if (interaction.customId.startsWith("rolebtn_")) {
-            await handleRoleButton(interaction);
-            return;
-          }
-          await handleComponent(interaction);
-        }
-        // ログ送信
-        await logToSheets({
-          serverId: interaction.guildId,
-          userId: interaction.user.id,
-          channelId: interaction.channelId,
-          level: "INFO",
-          timestamp: interaction.createdAt.toISOString(),
-          cmd: interaction.commandName,
-          message: "Slash command executed",
-        });
         return;
       }
 
-      // ✅ 固定コマンド処理（バックアップ）
+      // 固定コマンド（保険）
       switch (commandName) {
         case 'ping': return await pingCommand.execute(interaction);
         case 'おみくじ': return await omikujiCommand.execute(interaction);
@@ -251,30 +252,19 @@ client.on('interactionCreate', async (interaction) => {
         case 'uncategorizechannel': return await uncategorizechannelCommand.execute(interaction);
       }
 
-      // もし該当がなければ
-      console.warn(`⚠️ 未定義のスラッシュコマンド: ${commandName}`);
-      return;
-    }
-
-    // コンポーネント（ボタン / セレクト / モーダル）
-    if (interaction.isButton() || interaction.isStringSelectMenu() || interaction.isModalSubmit()) {
-      console.log("[interactionCreate] Component interaction detected:", interaction.customId, "type:",
-        interaction.isButton() ? "button" :
-        interaction.isStringSelectMenu() ? "select" :
-        interaction.isModalSubmit() ? "modal" : "unknown");
-      await handleComponent(interaction);
-      return;
+      console.warn("⚠️ 未定義のスラッシュコマンド:", commandName);
     }
 
   } catch (err) {
     console.error("❌ interactionCreate error:", err);
     try {
       if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({ content: "⚠️ エラーが発生しました。", ephemeral: true });
+        await interaction.reply({
+          content: "⚠️ エラーが発生しました。",
+          ephemeral: true
+        });
       }
-    } catch (replyErr) {
-      console.error("❌ Failed to reply to interaction after error:", replyErr);
-    }
+    } catch {}
   }
 });
 
@@ -283,6 +273,13 @@ client.on('interactionCreate', async (interaction) => {
 // ==========================
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
+  if (!message.guild) return;
+    // XP加算（ここだけ）
+  try {
+    await handleXpMessage(message);
+  } catch (err) {
+    console.error("❌ XP処理エラー:", err);
+  }
 
   // 「ping」に反応
   if (message.content.toLowerCase() === 'ping') {
