@@ -8,10 +8,13 @@ export const data = new SlashCommandBuilder()
   .setDescription("📊 あなたのレベルとXPを表示します");
 
 export async function execute(interaction) {
+  let deferred = false;
+
   // ✅ 安全に defer
   try {
     if (!interaction.deferred && !interaction.replied) {
       await interaction.deferReply();
+      deferred = true;
     }
   } catch (e) {
     console.error("❌ deferReply failed:", e);
@@ -51,10 +54,12 @@ export async function execute(interaction) {
     ctx.fillRect(0, 0, 800, 300);
 
     // アバター
-    const avatar = await loadImage(
-      user.displayAvatarURL({ extension: "png", size: 128 })
-    );
-    ctx.drawImage(avatar, 30, 80, 128, 128);
+    try {
+      const avatar = await loadImage(user.displayAvatarURL({ extension: "png", size: 128 }));
+      ctx.drawImage(avatar, 30, 80, 128, 128);
+    } catch {
+      console.warn("⚠️ アバター読み込み失敗");
+    }
 
     // ユーザー情報
     ctx.fillStyle = "#fff";
@@ -63,35 +68,37 @@ export async function execute(interaction) {
     ctx.fillText(`Level: ${level}`, 180, 170);
     ctx.fillText(`XP: ${xp} / ${nextXP}`, 180, 210);
 
-    // XPバーの背景
+    // XPバー
     const barX = 180;
     const barY = 230;
     const barWidth = 500;
     const barHeight = 25;
+
     ctx.fillStyle = "#444";
     ctx.fillRect(barX, barY, barWidth, barHeight);
 
-    // XPバーのグラデーション
     const grad = ctx.createLinearGradient(barX, 0, barX + barWidth, 0);
     grad.addColorStop(0, "#00ff99");
     grad.addColorStop(1, "#00ccff");
     ctx.fillStyle = grad;
     ctx.fillRect(barX, barY, barWidth * progress, barHeight);
 
-    // XPバーの枠線
     ctx.strokeStyle = "#fff";
     ctx.lineWidth = 2;
     ctx.strokeRect(barX, barY, barWidth, barHeight);
 
-    const attachment = new AttachmentBuilder(canvas.toBuffer(), {
-      name: "rank.png",
-    });
+    const attachment = new AttachmentBuilder(canvas.toBuffer(), { name: "rank.png" });
 
-    await interaction.editReply({ files: [attachment] }).catch(async () => {
-      if (!interaction.replied) {
-        await interaction.reply({ files: [attachment] }).catch(() => {});
-      }
-    });
+    // ✅ defer した場合は editReply、していない場合は reply
+    if (deferred || interaction.deferred) {
+      await interaction.editReply({ files: [attachment] }).catch(async () => {
+        if (!interaction.replied) {
+          await interaction.reply({ files: [attachment] }).catch(() => {});
+        }
+      });
+    } else {
+      await interaction.reply({ files: [attachment] }).catch(() => {});
+    }
 
   } catch (err) {
     console.error("❌ rank command error:", err);
@@ -99,6 +106,10 @@ export async function execute(interaction) {
       await interaction.reply({
         content: "⚠️ ランク情報の取得中にエラーが発生しました。",
         ephemeral: true,
+      }).catch(() => {});
+    } else if (interaction.deferred) {
+      await interaction.editReply({
+        content: "⚠️ ランク情報の取得中にエラーが発生しました。",
       }).catch(() => {});
     }
   }
