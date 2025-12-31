@@ -1,11 +1,11 @@
 // utils/xp-system.js
 import { db } from "../../firestore.js";
-import { getNextLevelXP } from "./level-curve.js";
-import { applyLevelRoles } from "./levelSystem.js";
-import { checkUnlocks } from "./unlockSystem.js";
+import { getNextLevelXP } from "../utils/level-curve.js";
+import { applyLevelRoles } from "../utils/levelSystem.js";
+import { checkUnlocks } from "../utils/unlockSystem.js";
 
 /**
- * XP加算とレベルアップ処理
+ * XP加算とレベルアップ処理（トランザクションで二重送信防止）
  * @param {string} guildId
  * @param {string} userId
  * @param {number} gain
@@ -31,69 +31,80 @@ export async function addXP(
   }
 
   const ref = db.collection("guilds").doc(guildId).collection("users").doc(userId);
-  const snap = await ref.get();
-  const data = snap.exists
-    ? snap.data()
-    : { xp: 0, level: 1, lastMessage: 0, buffs: [] };
 
-  const now = Date.now();
-  if (now - data.lastMessage < 30000) {
-    return { leveledUp: false, level: data.level, unlocked: [] };
-  }
+  const result = await db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    const data = snap.exists
+      ? snap.data()
+      : { xp: 0, level: 1, lastMessage: 0, lastLevelUpSent: 0, buffs: [] };
 
-  data.lastMessage = now;
+    const now = Date.now();
 
-  // バフ適用
-  let actualGain = gain;
-  if (data.buffs?.includes("doubleXP")) actualGain *= 2;
-
-  data.xp += actualGain;
-
-  const nextXP = getNextLevelXP(data.level);
-  let leveledUp = false;
-  let unlocked = [];
-
-  if (data.xp >= nextXP) {
-    data.level++;
-    leveledUp = true;
-
-    if (channel) {
-      await channel.send(
-        `🎉 **${username}** が **レベル ${data.level}** にアップ！ (+${actualGain} XP)`
-      );
+    // 30秒以内は XP 加算スキップ
+    if (now - data.lastMessage < 30000) {
+      return { leveledUp: false, level: data.level, unlocked: [] };
     }
 
-    if (member) {
-      await applyLevelRoles(member, data.level);
-      unlocked = await checkUnlocks(member, data.level) ?? [];
+    data.lastMessage = now;
+
+    // バフ適用
+    let actualGain = gain;
+    if (data.buffs?.includes("doubleXP")) actualGain *= 2;
+
+    data.xp += actualGain;
+
+    const nextXP = getNextLevelXP(data.level);
+    let leveledUp = false;
+    let unlocked = [];
+
+    // レベルアップ判定
+    if (data.xp >= nextXP) {
+      data.level++;
+      leveledUp = true;
+
+      // 二重送信防止（1秒以内に送信済みならスキップ）
+      if (channel && now - (data.lastLevelUpSent || 0) > 1000) {
+        data.lastLevelUpSent = now;
+
+        // メッセージ送信はトランザクション外で行う
+        setTimeout(async () => {
+          try {
+            await channel.send(
+              `🎉 **${username}** が **レベル ${data.level}** にアップ！ (+${actualGain} XP)`
+            );
+          } catch {}
+        }, 0);
+      }
+
+      // レベルアップ時の処理
+      if (member) {
+        applyLevelRoles(member, data.level).catch(console.error);
+        unlocked = await checkUnlocks(member, data.level) ?? [];
+      }
     }
-  }
 
-  await ref.set(data, { merge: true });
+    transaction.set(ref, data, { merge: true });
 
-  return {
-    leveledUp,
-    level: data.level,
-    unlocked,
-    xpAdded: actualGain,
-  };
+    return { leveledUp, level: data.level, unlocked, xpAdded: actualGain };
+  });
+
+  return result;
 }
 
 /**
  * バフ付与
- * @param {string} guildId
- * @param {string} userId
- * @param {string} buffName
  */
 export async function addBuff(guildId, userId, buffName) {
   const ref = db.collection("guilds").doc(guildId).collection("users").doc(userId);
-  const snap = await ref.get();
-  const data = snap.exists ? snap.data() : { xp: 0, level: 1, buffs: [] };
+  await db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    const data = snap.exists ? snap.data() : { xp: 0, level: 1, buffs: [] };
 
-  if (!data.buffs) data.buffs = [];
-  if (!data.buffs.includes(buffName)) data.buffs.push(buffName);
+    if (!data.buffs) data.buffs = [];
+    if (!data.buffs.includes(buffName)) data.buffs.push(buffName);
 
-  await ref.set(data, { merge: true });
+    transaction.set(ref, data, { merge: true });
+  });
 }
 
 /**
@@ -101,11 +112,13 @@ export async function addBuff(guildId, userId, buffName) {
  */
 export async function removeBuff(guildId, userId, buffName) {
   const ref = db.collection("guilds").doc(guildId).collection("users").doc(userId);
-  const snap = await ref.get();
-  const data = snap.exists ? snap.data() : { xp: 0, level: 1, buffs: [] };
+  await db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    const data = snap.exists ? snap.data() : { xp: 0, level: 1, buffs: [] };
 
-  if (data.buffs?.includes(buffName)) {
-    data.buffs = data.buffs.filter(b => b !== buffName);
-    await ref.set(data, { merge: true });
-  }
+    if (data.buffs?.includes(buffName)) {
+      data.buffs = data.buffs.filter(b => b !== buffName);
+      transaction.set(ref, data, { merge: true });
+    }
+  });
 }
