@@ -1,10 +1,16 @@
-// 📂 events/message-xp.js
 import { addXP } from "../commands/rank/xp-system.js";
 
 export async function handleXpMessage(message) {
   if (message.author.bot || !message.guild) return;
 
-  const result = await addXp(message.guild.id, message.author.id, 10);
+  const result = await addXP(
+    message.guild.id,
+    message.author.id,
+    10,
+    message.member,
+    message.channel,
+    message.author.username
+  );
 
   if (result.leveledUp) {
     await message.channel.send(
