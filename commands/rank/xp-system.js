@@ -1,7 +1,7 @@
 import { db } from "../../firestore.js";
-import { getNextLevelXP } from "./level-curve.js";
-import { applyLevelRoles } from "./levelSystem.js";
-import { checkUnlocks } from "./unlockSystem.js";
+import { getNextLevelXP } from "../utils/level-curve.js";
+import { applyLevelRoles } from "../utils/levelSystem.js";
+import { checkUnlocks } from "../utils/unlockSystem.js";
 
 /**
  * XP加算とレベルアップ処理
