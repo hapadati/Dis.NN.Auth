@@ -1,5 +1,5 @@
 // 📂 events/message-xp.js
-import { addXp } from "../commands/rank/xp-system.js";
+import { addXP } from "../commands/rank/xp-system.js";
 
 export async function handleXpMessage(message) {
   if (message.author.bot || !message.guild) return;
