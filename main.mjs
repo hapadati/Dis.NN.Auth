@@ -190,29 +190,34 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 // 📂 Interaction 処理
 // ==========================
 client.on('interactionCreate', async (interaction) => {
-  if (interaction.replied || interaction.deferred) return;
   try {
     if (interaction.user?.bot) return;
 
     // ==========================
     // 🔘 コンポーネント（ボタン / セレクト / モーダル）
     // ==========================
-    if (
-      interaction.isButton() ||
-      interaction.isStringSelectMenu() ||
-      interaction.isModalSubmit()
-    ) {
-      console.log(
-        "[interactionCreate] component:",
-        interaction.customId,
-        interaction.isButton() ? "button" :
-        interaction.isStringSelectMenu() ? "select" :
-        interaction.isModalSubmit() ? "modal" : "unknown"
-      );
+if (
+  interaction.isButton() ||
+  interaction.isStringSelectMenu() ||
+  interaction.isModalSubmit()
+) {
+  console.log(
+    "[interactionCreate] component:",
+    interaction.customId,
+    interaction.isButton() ? "button" :
+    interaction.isStringSelectMenu() ? "select" :
+    interaction.isModalSubmit() ? "modal" : "unknown"
+  );
 
-      await handleComponent(interaction);
-      return;
-    }
+  // ★ 追加：3秒以内に必ず ACK を取る（保険）
+  if (!interaction.deferred && !interaction.replied) {
+    await interaction.deferUpdate().catch(() => {});
+  }
+
+  await handleComponent(interaction);
+  return;
+}
+
 
     // ==========================
     // 💬 スラッシュコマンド
