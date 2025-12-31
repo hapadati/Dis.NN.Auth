@@ -190,6 +190,7 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
 // 📂 Interaction 処理
 // ==========================
 client.on('interactionCreate', async (interaction) => {
+  if (interaction.replied || interaction.deferred) return;
   try {
     if (interaction.user?.bot) return;
 
@@ -260,17 +261,8 @@ client.on('interactionCreate', async (interaction) => {
 
       console.warn("⚠️ 未定義のスラッシュコマンド:", commandName);
     }
-
-  } catch (err) {
+    } catch (err) {
     console.error("❌ interactionCreate error:", err);
-    try {
-      if (!interaction.replied && !interaction.deferred) {
-        await interaction.reply({
-          content: "⚠️ エラーが発生しました。",
-          ephemeral: true
-        });
-      }
-    } catch {}
   }
 });
 
