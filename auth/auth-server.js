@@ -5,7 +5,9 @@ import dotenv from "dotenv";
 import { db } from "../firebase.js";
 import { doc, setDoc } from "firebase/firestore";
 import { isVpnIp } from "./verify-vpn.js";
-import blockedGuilds from "./blocked.json" assert { type: "json" };
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const blockedGuilds = require('./blocked.json');
 
 dotenv.config();
 
