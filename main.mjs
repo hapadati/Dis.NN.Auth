@@ -8,6 +8,7 @@ import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
 import pkg from "pg";
 const { Pool } = pkg;
+import { uploadImage } from './utils/cloudinary.mjs';
 
 // ESM 用 __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -266,7 +267,7 @@ client.on('messageCreate', async (message) => {
     handleMessageRoll(message).catch(() => {});
   }
 
-  // ログ
+  // ログ (Spreadsheet)
   logToSheets({
     serverId: message.guildId,
     userId: message.author.id,
@@ -276,6 +277,24 @@ client.on('messageCreate', async (message) => {
     cmd: 'message',
     message: message.content.slice(0, 200),
   }).catch(() => {});
+
+  // チャットログ保存 (Neon DB)
+  (async () => {
+    let imageUrl = null;
+    if (message.attachments.size > 0) {
+      const attachment = message.attachments.first();
+      // 画像ファイルのみアップロードを試みる
+      if (attachment.contentType?.startsWith('image/')) {
+        imageUrl = await uploadImage(attachment.url);
+      }
+    }
+
+    pool.query(
+      `INSERT INTO chat_logs (guild_id, channel_id, user_id, user_tag, content, image_url)
+       VALUES ($1, $2, $3, $4, $5, $6)`,
+      [message.guildId, message.channelId, message.author.id, message.author.tag, message.content, imageUrl]
+    ).catch(err => console.error('❌ DB chat_log error:', err.message));
+  })();
 });
 
 // ==========================
