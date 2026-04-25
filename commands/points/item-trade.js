@@ -129,7 +129,6 @@ import {
     if (interaction.user.id !== toId) {
       await interaction.reply({
         content: "❌ あなたはこのトレードの対象ではありません。",
-        ephemeral: true,
       });
       return;
     }

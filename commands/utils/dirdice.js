@@ -154,7 +154,6 @@ export async function handleMessageRoll(message) {
 
     const parsed = parseDiceExpression(input);
     if (!parsed) {
-        await message.reply('❌ 無効なダイスの書式です。例: `2d6`, `1d100+10`, `dd20-5`');
         return;
     }
 
@@ -192,9 +191,6 @@ await showRollingEmbed(message, diceResultCallback, input, minTotal, maxTotal);
 
         } catch (error) {
             console.error('❌ サイコロエラー:', error);
-            await message.reply(`❌ エラーが発生しました: ${error.message}`);
         }
-    } else {
-        await message.reply('❌ 無効なダイスの書式です。例: `2d6`, `dd20`, `1d100+10`');
     }
 }

@@ -31,7 +31,7 @@ export const lockchannelCommand = {
       await interaction.reply(`🔒 チャンネル **#${channel.name}** をロックしました。`);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: "⚠️ ロックに失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ ロックに失敗しました。" });
     }
   },
 };

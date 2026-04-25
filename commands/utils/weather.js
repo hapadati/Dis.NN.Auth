@@ -53,7 +53,7 @@ export async function execute(interaction) {
         if (interaction.deferred) {
             await interaction.editReply({ content: `❌ 「${interaction.options.getString('city')}」の天気情報を取得できませんでした。都市名が正しいか確認してください。` }).catch(() => {});
         } else {
-            await interaction.reply({ content: '❌ エラーが発生しました。', flags: [MessageFlags.Ephemeral] }).catch(() => {});
+            await interaction.reply({ content: '❌ エラーが発生しました。' }).catch(() => {});
         }
     }
 }

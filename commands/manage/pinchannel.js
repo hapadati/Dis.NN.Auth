@@ -16,10 +16,10 @@ export const pinchannelCommand = {
     try {
       const message = await channel.messages.fetch(messageId);
       await message.pin();
-      await interaction.reply({ content: `✅ メッセージをピン留めしました。`, ephemeral: true });
+      await interaction.reply({ content: `✅ メッセージをピン留めしました。` });
     } catch (err) {
       console.error("❌ pinchannel error:", err);
-      await interaction.reply({ content: "⚠️ ピン留めに失敗しました。メッセージIDを確認してください。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ ピン留めに失敗しました。メッセージIDを確認してください。" });
     }
   },
 };

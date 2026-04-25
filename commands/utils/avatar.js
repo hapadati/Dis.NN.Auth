@@ -32,7 +32,7 @@ export async function execute(interaction) {
         if (interaction.deferred) {
             await interaction.editReply({ content: '❌ アバターの取得中にエラーが発生しました。' }).catch(() => {});
         } else {
-            await interaction.reply({ content: '❌ エラーが発生しました。', flags: [MessageFlags.Ephemeral] }).catch(() => {});
+            await interaction.reply({ content: '❌ エラーが発生しました。' }).catch(() => {});
         }
     }
 }

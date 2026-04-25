@@ -50,11 +50,11 @@ const customId = interaction.options.getString('custom_id') || `${interaction.us
 
     if (enableTimer) {
       if (!durationStr) {
-        return interaction.reply({ content: '終了時間を使用する場合は duration を指定してください。', ephemeral: true });
+        return interaction.reply({ content: '終了時間を使用する場合は duration を指定してください。' });
       }
       duration = parseDuration(durationStr);
       if (duration === null) {
-        return interaction.reply({ content: '終了時間の形式が正しくありません。例: 1s, 30m, 2h, 3d, 1w, 2y', ephemeral: true });
+        return interaction.reply({ content: '終了時間の形式が正しくありません。例: 1s, 30m, 2h, 3d, 1w, 2y' });
       }
     }
 
@@ -117,9 +117,9 @@ recruitmentMap.set(customId, {
       const current = recruitmentMap.get(customId);
       if (!current.applicants.includes(i.user.username)) {
         current.applicants.push(i.user.username);
-        await i.reply({ content: '応募が完了しました！', ephemeral: true });
+        await i.reply({ content: '応募が完了しました！' });
       } else {
-        await i.reply({ content: 'すでに応募しています。', ephemeral: true });
+        await i.reply({ content: 'すでに応募しています。' });
       }
     });
 

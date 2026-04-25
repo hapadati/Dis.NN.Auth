@@ -18,6 +18,5 @@ export async function execute(interaction) {
   await setUnlockLevel(guildId, command, level);
   await interaction.reply({
     content: `✅ コマンド「/${command}」はLv.${level}から使用可能になりました。`,
-    ephemeral: true,
   });
 }

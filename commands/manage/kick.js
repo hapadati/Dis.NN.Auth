@@ -15,7 +15,7 @@ data: new SlashCommandBuilder()
     
     // メッセージ管理権限の確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.KickMembers)) {
-      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。', ephemeral: true });
+      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。' });
     }
 
     try {
@@ -26,11 +26,11 @@ data: new SlashCommandBuilder()
         await member.kick('キックされました');
         return interaction.reply(`${user.tag} さんがキックされました。`);
       } else {
-        return interaction.reply({ content: 'そのユーザーをキックできません。権限が不足している可能性があります。', ephemeral: true });
+        return interaction.reply({ content: 'そのユーザーをキックできません。権限が不足している可能性があります。' });
       }
     } catch (error) {
       console.error(error);
-      return interaction.reply({ content: 'キック処理中にエラーが発生しました。', ephemeral: true });
+      return interaction.reply({ content: 'キック処理中にエラーが発生しました。' });
     }
   },
 };

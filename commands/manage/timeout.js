@@ -34,7 +34,7 @@ export const timeoutCommand = {
     const match = durationString.match(regex);
 
     if (!match) {
-      return interaction.reply({ content: '無効な時間形式です。正しい形式で指定してください（例: 30s, 1m, 2h）。', ephemeral: true });
+      return interaction.reply({ content: '無効な時間形式です。正しい形式で指定してください（例: 30s, 1m, 2h）。' });
     }
 
     const amount = parseInt(match[1]); // 数字部分
@@ -45,7 +45,7 @@ export const timeoutCommand = {
 
     // コマンド実行者がタイムアウト権限を持っているか確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。', ephemeral: true });
+      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。' });
     }
 
     const member = await interaction.guild.members.fetch(user.id);
@@ -55,12 +55,12 @@ export const timeoutCommand = {
         return interaction.reply(`${user.tag} さんがタイムアウトされました。`);
       } catch (error) {
         if (error instanceof DiscordAPIError && error.code === 50013) {
-          return interaction.reply({ content: 'そのユーザーをタイムアウトできません。権限が不足しているか、上位にいる可能性があります。', ephemeral: true });
+          return interaction.reply({ content: 'そのユーザーをタイムアウトできません。権限が不足しているか、上位にいる可能性があります。' });
         }
-        return interaction.reply({ content: 'タイムアウトの処理中にエラーが発生しました。', ephemeral: true });
+        return interaction.reply({ content: 'タイムアウトの処理中にエラーが発生しました。' });
       }
     } else {
-      return interaction.reply({ content: 'そのユーザーにタイムアウトを適用できません。', ephemeral: true });
+      return interaction.reply({ content: 'そのユーザーにタイムアウトを適用できません。' });
     }
   },
 };

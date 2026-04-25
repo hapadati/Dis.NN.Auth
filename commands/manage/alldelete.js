@@ -22,7 +22,7 @@ export const alldeleteCommand = {
 
     // コマンド実行者がメッセージ管理権限を持っているか確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。', ephemeral: true });
+      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。' });
     }
 
     try {
@@ -36,17 +36,17 @@ export const alldeleteCommand = {
       const messagesToDelete = userMessages.slice(0, limit);
 
       if (messagesToDelete.size === 0) {
-        return interaction.reply({ content: `${user.tag} さんまたはボットのメッセージは見つかりませんでした。`, ephemeral: true });
+        return interaction.reply({ content: `${user.tag} さんまたはボットのメッセージは見つかりませんでした。` });
       }
 
       // メッセージを一括削除
       await interaction.channel.bulkDelete(messagesToDelete, true);  // `true` は削除済みメッセージも対象にするオプション
 
-      return interaction.reply({ content: `${user.tag} さんまたはボットのメッセージ ${messagesToDelete.size} 件が削除されました。`, ephemeral: true });
+      return interaction.reply({ content: `${user.tag} さんまたはボットのメッセージ ${messagesToDelete.size} 件が削除されました。` });
 
     } catch (error) {
       console.error(error);
-      return interaction.reply({ content: 'メッセージ削除中にエラーが発生しました。', ephemeral: true });
+      return interaction.reply({ content: 'メッセージ削除中にエラーが発生しました。' });
     }
   },
 };

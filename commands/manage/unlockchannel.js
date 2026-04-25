@@ -31,7 +31,7 @@ export const unlockchannelCommand = {
       await interaction.reply(`🔓 チャンネル **#${channel.name}** のロックを解除しました。`);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: "⚠️ ロック解除に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ ロック解除に失敗しました。" });
     }
   },
 };

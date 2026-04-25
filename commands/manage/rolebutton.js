@@ -82,7 +82,6 @@ import {
   
       await interaction.reply({
         content: `✅ ロールボタンを作成しました！ (${label} → ${role.name})`,
-        ephemeral: true,
       });
     },
   };
@@ -102,7 +101,6 @@ import {
     if (!role) {
       await interaction.reply({
         content: "⚠️ 対応するロールが見つかりません。",
-        ephemeral: true,
       });
       return;
     }
@@ -114,13 +112,11 @@ import {
         await member.roles.remove(role);
         await interaction.reply({
           content: `➖ ロール **${role.name}** を削除しました。`,
-          ephemeral: true,
         });
       } else {
         await member.roles.add(role);
         await interaction.reply({
           content: `➕ ロール **${role.name}** を付与しました！`,
-          ephemeral: true,
         });
       }
   
@@ -139,7 +135,6 @@ import {
       console.error("❌ RoleButton error:", err);
       await interaction.reply({
         content: "⚠️ ロールの付与・削除に失敗しました。",
-        ephemeral: true,
       });
     }
   }

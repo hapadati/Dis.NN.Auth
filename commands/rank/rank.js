@@ -21,7 +21,6 @@ export async function execute(interaction) {
     if (!interaction.replied) {
       await interaction.reply({
         content: "⚠️ ランク情報の取得中にエラーが発生しました（defer失敗）",
-        ephemeral: true,
       }).catch(() => {});
     }
     return;
@@ -105,7 +104,6 @@ export async function execute(interaction) {
     if (!interaction.replied) {
       await interaction.reply({
         content: "⚠️ ランク情報の取得中にエラーが発生しました。",
-        ephemeral: true,
       }).catch(() => {});
     } else if (interaction.deferred) {
       await interaction.editReply({

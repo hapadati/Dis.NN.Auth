@@ -17,7 +17,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   // すぐに応答を延期してタイムアウト防止
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply();
 
   const target = interaction.options.getUser('user');
   const amount = interaction.options.getInteger('amount');

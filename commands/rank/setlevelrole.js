@@ -19,5 +19,5 @@ export async function execute(interaction) {
   const remove = interaction.options.getString("remove")?.split(",").map(s => s.trim()) || [];
 
   await setLevelRoleConfig(guildId, level, add, remove);
-  await interaction.reply({ content: `✅ Lv.${level} 設定を更新しました。`, ephemeral: true });
+  await interaction.reply({ content: `✅ Lv.${level} 設定を更新しました。` });
 }

@@ -46,7 +46,7 @@ export const createchannelCommand = {
       await interaction.reply(`✅ チャンネル **#${name}** を作成しました！`);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: "⚠️ チャンネル作成に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ チャンネル作成に失敗しました。" });
     }
   },
 };

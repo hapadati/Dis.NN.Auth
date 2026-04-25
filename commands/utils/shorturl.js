@@ -11,7 +11,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
     try {
-        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+        await interaction.deferReply();
 
         let targetUrl = interaction.options.getString('url');
 

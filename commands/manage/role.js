@@ -22,7 +22,7 @@ export const roleCommand = {
   async execute(interaction) {
     // コマンド実行者が管理者権限を持っているか確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)) {
-      return interaction.reply({ content: 'このコマンドを実行するには管理権限が必要です。', ephemeral: true });
+      return interaction.reply({ content: 'このコマンドを実行するには管理権限が必要です。' });
     }
 
     const role = interaction.options.getRole('role');
@@ -73,11 +73,11 @@ export const roleCommand = {
       if (i.customId === buttonId + '_add_role') {
         // ロールを付与
         await i.member.roles.add(role);
-        await i.reply({ content: `${role.name} ロールがあなたに付与されました！`, ephemeral: true });
+        await i.reply({ content: `${role.name} ロールがあなたに付与されました！` });
       } else if (i.customId === buttonId + '_remove_role') {
         // ロールを削除
         await i.member.roles.remove(role);
-        await i.reply({ content: `${role.name} ロールがあなたから削除されました！`, ephemeral: true });
+        await i.reply({ content: `${role.name} ロールがあなたから削除されました！` });
       }
 
       // ボタンを無効化して再び操作できないようにする
@@ -105,7 +105,7 @@ export const removebutton = {
   async execute(interaction) {
     // コマンド実行者が管理者権限を持っているか確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.ManageMessages)) {
-      return interaction.reply({ content: 'このコマンドを実行するにはメッセージ管理権限が必要です。', ephemeral: true });
+      return interaction.reply({ content: 'このコマンドを実行するにはメッセージ管理権限が必要です。' });
     }
 
     const buttonId = interaction.options.getString('button_id');
@@ -128,18 +128,17 @@ export const removebutton = {
           content: `**ボタンID:** ${buttonId}\n` +
                    `**関連ロール:** ${roleName}\n` +
                    `**送信日:** ${sendDate}\n` +
-                   'このメッセージを削除しますか？',
-          ephemeral: true
+                   'このメッセージを削除しますか？'
         });
 
         // メッセージ削除
         await message.delete();
       } else {
-        return interaction.reply({ content: '指定されたボタンIDのメッセージが見つかりませんでした。', ephemeral: true });
+        return interaction.reply({ content: '指定されたボタンIDのメッセージが見つかりませんでした。' });
       }
     } catch (error) {
       console.error(error);
-      return interaction.reply({ content: '指定されたボタンIDのメッセージを削除できませんでした。', ephemeral: true });
+      return interaction.reply({ content: '指定されたボタンIDのメッセージを削除できませんでした。' });
     }
   },
 };

@@ -65,7 +65,7 @@ export async function execute(interaction) {
     } catch (error) {
         console.error('[poll] Setup Error:', error);
         if (!interaction.replied && !interaction.deferred) {
-            await interaction.reply({ content: '❌ 投票の作成中にエラーが発生しました。', flags: [MessageFlags.Ephemeral] });
+            await interaction.reply({ content: '❌ 投票の作成中にエラーが発生しました。' });
         }
     }
 }
@@ -127,6 +127,6 @@ export async function handlePollButton(interaction) {
     } catch (error) {
         console.error('[poll] Button Update Error:', error);
         // deferUpdate済なので、追加のエラーメッセージをこっそり出す
-        await interaction.followUp({ content: '❌ 投票の集計中にエラーが発生しました。', flags: [MessageFlags.Ephemeral] }).catch(() => {});
+        await interaction.followUp({ content: '❌ 投票の集計中にエラーが発生しました。' }).catch(() => {});
     }
 }

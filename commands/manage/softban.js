@@ -20,14 +20,14 @@ export const softbanCommand = {
 
     // コマンド実行者がバンする権限を持っているか確認
     if (!interaction.member.permissions.has(PermissionFlagsBits.BanMembers)) {
-      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。', ephemeral: true });
+      return interaction.reply({ content: 'あなたにはこの操作を行う権限がありません。' });
     }
 
     const member = await interaction.guild.members.fetch(user.id);
     
     // ユーザーがバン可能かチェック
     if (!member.bannable) {
-      return interaction.reply({ content: 'そのユーザーをソフトバンできません。権限が不足しているか、上位にいる可能性があります。', ephemeral: true });
+      return interaction.reply({ content: 'そのユーザーをソフトバンできません。権限が不足しているか、上位にいる可能性があります。' });
     }
 
     let daysToDelete = 0; // デフォルトはメッセージ削除なし（無期限）
@@ -51,7 +51,7 @@ export const softbanCommand = {
       daysToDelete = amount * timeUnits[unit];
     } else if (durationString !== '0') {
       // 無効な入力があった場合の処理
-      return interaction.reply({ content: '無効な期間が指定されました。正しい形式（例: 1d, 1h）で入力してください。', ephemeral: true });
+      return interaction.reply({ content: '無効な期間が指定されました。正しい形式（例: 1d, 1h）で入力してください。' });
     }
 
     try {
@@ -65,7 +65,7 @@ export const softbanCommand = {
     } catch (error) {
       // エラーハンドリングの強化
       console.error('ソフトバンエラー:', error);
-      return interaction.reply({ content: `ソフトバンの処理中にエラーが発生しました: ${error.message}`, ephemeral: true });
+      return interaction.reply({ content: `ソフトバンの処理中にエラーが発生しました: ${error.message}` });
     }
   },
 };

@@ -14,8 +14,7 @@ export async function execute(interaction) {
 
         if (!role) {
             await interaction.reply({
-                content: '❌ ロールが見つかりません。',
-                flags: [MessageFlags.Ephemeral]
+                content: '❌ ロールが見つかりません。'
             });
             return;
         }
@@ -85,7 +84,7 @@ export async function execute(interaction) {
         if (interaction.deferred || interaction.replied) {
             await interaction.editReply(errorMessage).catch(() => { });
         } else {
-            await interaction.reply({ content: errorMessage, flags: [MessageFlags.Ephemeral] }).catch(() => { });
+            await interaction.reply({ content: errorMessage }).catch(() => { });
         }
     }
 }

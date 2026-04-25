@@ -17,16 +17,16 @@ export const categorychannelCommand = {
     const category = interaction.options.getChannel("category");
 
     if (category.type !== 4) { // 4 = Category
-      await interaction.reply({ content: "⚠️ 移動先はカテゴリーである必要があります。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ 移動先はカテゴリーである必要があります。" });
       return;
     }
 
     try {
       await targetChannel.setParent(category.id);
-      await interaction.reply({ content: `✅ ${targetChannel} を ${category.name} に移動しました。`, ephemeral: true });
+      await interaction.reply({ content: `✅ ${targetChannel} を ${category.name} に移動しました。` });
     } catch (err) {
       console.error("❌ categorychannel error:", err);
-      await interaction.reply({ content: "⚠️ カテゴリー移動に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ カテゴリー移動に失敗しました。" });
     }
   },
 };

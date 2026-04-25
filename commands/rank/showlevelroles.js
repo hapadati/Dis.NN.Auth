@@ -8,7 +8,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   const guildId = interaction.guild.id;
-  await interaction.deferReply({ ephemeral: true });
+  await interaction.deferReply();
 
   const configs = await getAllLevelConfigs(guildId);
   if (configs.length === 0) {

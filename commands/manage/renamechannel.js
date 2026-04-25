@@ -36,7 +36,7 @@ export const renamechannelCommand = {
       await interaction.reply(`✏️ **#${oldName}** → **#${newName}** に変更しました！`);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: "⚠️ 名前変更に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ 名前変更に失敗しました。" });
     }
   },
 };

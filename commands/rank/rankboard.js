@@ -83,7 +83,7 @@ export async function execute(interaction) {
 
     const users = usersSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     if (users.length === 0) {
-      await interaction.reply({ content: "⚠️ ランキングデータがありません。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ ランキングデータがありません。" });
       return;
     }
 
@@ -114,7 +114,7 @@ export async function execute(interaction) {
 
     collector.on("collect", async i => {
       if (i.user.id !== user.id) {
-        await i.reply({ content: "⚠️ このボタンはあなた専用です。", ephemeral: true });
+        await i.reply({ content: "⚠️ このボタンはあなた専用です。" });
         return;
       }
 
@@ -158,7 +158,7 @@ export async function execute(interaction) {
   } catch (err) {
     console.error("❌ rankboard interactive error:", err);
     if (!interaction.replied) {
-      await interaction.reply({ content: "⚠️ ランキング取得中にエラーが発生しました。", ephemeral: true }).catch(() => {});
+      await interaction.reply({ content: "⚠️ ランキング取得中にエラーが発生しました。" }).catch(() => {});
     }
   }
 }

@@ -14,8 +14,7 @@ export async function execute(interaction) {
 
         if (!targetMember) {
             await interaction.reply({
-                content: '❌ このユーザーはサーバーに存在しません。',
-                flags: [MessageFlags.Ephemeral]
+                content: '❌ このユーザーはサーバーに存在しません。'
             });
             return;
         }
@@ -95,7 +94,7 @@ export async function execute(interaction) {
         if (interaction.deferred || interaction.replied) {
             await interaction.editReply(errorMessage).catch(() => { });
         } else {
-            await interaction.reply({ content: errorMessage, flags: [MessageFlags.Ephemeral] }).catch(() => { });
+            await interaction.reply({ content: errorMessage }).catch(() => { });
         }
     }
 }

@@ -25,7 +25,7 @@ export const data = new SlashCommandBuilder()
   .setDefaultMemberPermissions(0);
 
 export async function execute(interaction) {
-  await interaction.deferReply({ ephemeral: true }); // 先に応答確保
+  await interaction.deferReply(); // 先に応答確保
 
   try {
     const mid = interaction.options.getString('mid');

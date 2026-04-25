@@ -26,13 +26,12 @@ export async function execute(interaction) {
 
         if (!interaction.guild) {
             await interaction.reply({
-                content: '❌ このコマンドはサーバー内でのみ使用できます。',
-                flags: [MessageFlags.Ephemeral]
+                content: '❌ このコマンドはサーバー内でのみ使用できます。'
             });
             return;
         }
 
-        await interaction.deferReply({ flags: [MessageFlags.Ephemeral] });
+        await interaction.deferReply();
 
         // 最初のテキストチャンネルを取得
         const textChannel = interaction.guild.channels.cache.find(
@@ -80,7 +79,7 @@ export async function execute(interaction) {
         if (interaction.deferred || interaction.replied) {
             await interaction.editReply(errorMessage).catch(() => { });
         } else {
-            await interaction.reply({ content: errorMessage, flags: [MessageFlags.Ephemeral] }).catch(() => { });
+            await interaction.reply({ content: errorMessage }).catch(() => { });
         }
     }
 }

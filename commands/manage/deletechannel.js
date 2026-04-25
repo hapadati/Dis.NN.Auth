@@ -31,7 +31,7 @@ export const deletechannelCommand = {
       await interaction.reply(`🗑️ チャンネル **#${name}** を削除しました。`);
     } catch (err) {
       console.error(err);
-      await interaction.reply({ content: "⚠️ チャンネル削除に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ チャンネル削除に失敗しました。" });
     }
   },
 };

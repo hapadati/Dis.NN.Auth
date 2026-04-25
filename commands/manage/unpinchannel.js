@@ -16,10 +16,10 @@ export const unpinchannelCommand = {
     try {
       const message = await channel.messages.fetch(messageId);
       await message.unpin();
-      await interaction.reply({ content: `✅ ピン留めを解除しました。`, ephemeral: true });
+      await interaction.reply({ content: `✅ ピン留めを解除しました。` });
     } catch (err) {
       console.error("❌ unpinchannel error:", err);
-      await interaction.reply({ content: "⚠️ ピン留め解除に失敗しました。メッセージIDを確認してください。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ ピン留め解除に失敗しました。メッセージIDを確認してください。" });
     }
   },
 };

@@ -242,7 +242,7 @@ import {
       if (interaction.deferred || interaction.replied) {
         await interaction.editReply({ content: '❌ エラーが発生しました。' });
       } else {
-        await interaction.reply({ content: '❌ エラーが発生しました。', ephemeral: true });
+        await interaction.reply({ content: '❌ エラーが発生しました。' });
       }
     }
   }

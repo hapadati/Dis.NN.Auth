@@ -30,7 +30,6 @@ export const removebuttonCommand = {
       if (!snap.exists) {
         await interaction.reply({
           content: "⚠️ 指定したメッセージIDのロールボタン設定が見つかりません。",
-          ephemeral: true,
         });
         return;
       }
@@ -45,13 +44,11 @@ export const removebuttonCommand = {
 
       await interaction.reply({
         content: `🗑️ ロールボタン (ID: \`${messageId}\`) を削除しました。`,
-        ephemeral: true,
       });
     } catch (err) {
       console.error("❌ removebutton error:", err);
       await interaction.reply({
         content: "⚠️ ボタン削除中にエラーが発生しました。",
-        ephemeral: true,
       });
     }
   },

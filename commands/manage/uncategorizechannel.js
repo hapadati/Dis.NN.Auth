@@ -14,10 +14,10 @@ export const uncategorizechannelCommand = {
 
     try {
       await targetChannel.setParent(null);
-      await interaction.reply({ content: `✅ ${targetChannel} をカテゴリーから外しました。`, ephemeral: true });
+      await interaction.reply({ content: `✅ ${targetChannel} をカテゴリーから外しました。` });
     } catch (err) {
       console.error("❌ uncategorizechannel error:", err);
-      await interaction.reply({ content: "⚠️ カテゴリー解除に失敗しました。", ephemeral: true });
+      await interaction.reply({ content: "⚠️ カテゴリー解除に失敗しました。" });
     }
   },
 };
