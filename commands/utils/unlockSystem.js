@@ -1,4 +1,4 @@
-import { db } from "../firestore.js";
+import { db } from "../../firestore.js";
 
 /**
  * サーバーのレベル解放設定を保存

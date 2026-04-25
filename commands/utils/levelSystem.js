@@ -1,4 +1,4 @@
-import { db } from "../firestore.js";
+import { db } from "../../firestore.js";
 
 /**
  * Firestore: guilds/{guildId}/levelRoles/{level}

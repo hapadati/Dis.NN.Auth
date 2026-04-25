@@ -1,5 +1,5 @@
 import { SlashCommandBuilder, PermissionFlagsBits } from "discord.js";
-import { setUnlockLevel } from "../../utils/unlockSystem.js";
+import { setUnlockLevel } from "../utils/unlockSystem.js";
 
 export const data = new SlashCommandBuilder()
   .setName("setunlock")
